@@ -196,7 +196,6 @@ public final class XiangqiGameTest {
 		assertEquals(game.board, game.getBoard());
 	}
 
-	
 	@Test
 	public void testValidateMoveString() {
 		String FFFFF = "\0\0\0\0\0";
@@ -210,8 +209,6 @@ public final class XiangqiGameTest {
 		assertFalse(game.validateMoveString(length_F));
 		assertFalse(game.validateMoveString(TFTTF));
 	}
-
-	
 
 	@Test
 	public void testTryMove() {

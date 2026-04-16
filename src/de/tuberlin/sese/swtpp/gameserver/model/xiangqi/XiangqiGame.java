@@ -5,10 +5,8 @@ import de.tuberlin.sese.swtpp.gameserver.model.*;
 import java.io.Serializable;
 import java.util.*;
 
-
-
 public class XiangqiGame extends Game implements Serializable {
-	
+
 	/**
 	 *
 	 */
@@ -21,8 +19,7 @@ public class XiangqiGame extends Game implements Serializable {
 	// just for better comprehensibility of the code: assign red and black player
 	public Player blackPlayer;
 	public Player redPlayer;
-	public String board; 
-
+	public String board;
 
 	// internal representation of the game state
 
@@ -226,42 +223,54 @@ public class XiangqiGame extends Game implements Serializable {
 		return rows;
 	}
 
-	public Pair generalFromBoard(String color)
-	{
+	public Pair generalFromBoard(String color) {
 		char identifier = color.equals("red") ? 'G' : 'g';
-		Pair pos = new Pair(-1,-1);
-		String[] rows=getBoardRows();
-		for(int i=0;i<rows.length;i++)
-		{
-			for(int j=0;j<rows[9-i].length();j++)
-			{
-				if(rows[9-i].charAt(j) == identifier)
-				{
-					pos = new Pair(j,i);		
+		Pair pos = new Pair(-1, -1);
+		String[] rows = getBoardRows();
+		for (int i = 0; i < rows.length; i++) {
+			for (int j = 0; j < rows[9 - i].length(); j++) {
+				if (rows[9 - i].charAt(j) == identifier) {
+					pos = new Pair(j, i);
 				}
 			}
 		}
 		return pos;
 	}
-	
-	public Figures getFigureFromPos( Pair pos, String playerColor ) {
+
+	public Figures getFigureFromPos(Pair pos, String playerColor) {
 		Pair opposing = playerColor.equals("red") ? generalFromBoard("black") : generalFromBoard("red");
-		
+
 		char f = getBoardRows()[9 - pos.y].charAt(pos.x);
 		Figures fig;
 		switch (Character.toLowerCase(f)) {
-		case 'g': fig = new General(playerColor,opposing);break;
-		case 'a': fig = new Advisor(playerColor);break;
-		case 'e': fig = new Elephant(playerColor);break;
-		case 'h': fig = new Horse(playerColor);break;
-		case 'r': fig = new Rook(playerColor);break;
-		case 'c': fig = new Cannon(playerColor);break;
-		case 's': fig = new Soldier(playerColor);break;
-		default: fig = new Figures("null", 'n');break;
+		case 'g':
+			fig = new General(playerColor, opposing);
+			break;
+		case 'a':
+			fig = new Advisor(playerColor);
+			break;
+		case 'e':
+			fig = new Elephant(playerColor);
+			break;
+		case 'h':
+			fig = new Horse(playerColor);
+			break;
+		case 'r':
+			fig = new Rook(playerColor);
+			break;
+		case 'c':
+			fig = new Cannon(playerColor);
+			break;
+		case 's':
+			fig = new Soldier(playerColor);
+			break;
+		default:
+			fig = new Figures("null", 'n');
+			break;
 		}
-		return fig;	
+		return fig;
 	}
-	
+
 	public Pair getFieldValue(String field) {
 		Pair p = new Pair(field.charAt(0) - 97, Integer.parseInt(String.valueOf(field.charAt(1))));
 		return p;
@@ -282,76 +291,77 @@ public class XiangqiGame extends Game implements Serializable {
 	}
 
 	public Pair posOfGeneral(String color) {
-		//if(this.debug)System.out.println(this.board);
-		Pair res = new Pair(-1,-1);
+		// if(this.debug)System.out.println(this.board);
+		Pair res = new Pair(-1, -1);
 		for (int x = 3; x < 6; x++) {
-			if( color.equals("black"))
-			{
+			if (color.equals("black")) {
 				for (int y = 7; y < 10; y++) {
 					Pair temp = new Pair(x, y);
 					Figures result = this.getFigureFromPos(temp, color);
-					if ( result.identifier == 'g')res =temp; 
+					if (result.identifier == 'g')
+						res = temp;
 				}
-				if(res.x != -1)return res;
-			}			
-		
+				if (res.x != -1)
+					return res;
+			}
+
 			for (int y = 0; y < 3; y++) {
 				Pair temp = new Pair(x, y);
 				Figures result = this.getFigureFromPos(temp, color);
-				if ( result.identifier == 'G')res =temp;
+				if (result.identifier == 'G')
+					res = temp;
 			}
 		}
 		return res;
 	}
-	
+
 	public List<Pair> figurePositionsOf(String color) {
 		List<Pair> result = new LinkedList<Pair>();
-		
+
 		for (int x = 0; x < 9; ++x) {
 			for (int y = 0; y < 10; ++y) {
 				Pair temp = new Pair(x, y);
 				Figures f = this.getFigureFromPos(temp, color);
-				if (f.player.equals(color)) result.add(temp);	
+				if (f.player.equals(color))
+					result.add(temp);
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	public boolean isReachable(Pair pos, String color) {
 		List<Pair> figures = figurePositionsOf(color);
-		
-		for ( Pair p : figures ) {
+
+		for (Pair p : figures) {
 			Figures f = this.getFigureFromPos(p, color);
-			if ( f.isValidMove(new Points(p, pos), board) ) {
+			if (f.isValidMove(new Points(p, pos), board)) {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	public boolean isInCheckmate(Player pl) {
 		String tmpBoard = "";
 		String color = pl.equals(this.redPlayer) ? "red" : "black";
-		String col = color.equals("red") ? "black" : "red";		
+		String col = color.equals("red") ? "black" : "red";
 		Pair pos = posOfGeneral(color);
 		Figures general = this.getFigureFromPos(pos, color);
-		
+
 		Pair[] dests = {
-				
-				new Pair(pos.x + 1, pos.y),
-				new Pair(pos.x - 1, pos.y),
-				new Pair(pos.x, pos.y + 1 > 9 ? 9: pos.y +1),
-				new Pair(pos.x, pos.y - 1 < 0 ? 0: pos.y -1)};
-		
-		for ( int i = 0; i < 4; ++i ) {
+
+				new Pair(pos.x + 1, pos.y), new Pair(pos.x - 1, pos.y), new Pair(pos.x, pos.y + 1 > 9 ? 9 : pos.y + 1),
+				new Pair(pos.x, pos.y - 1 < 0 ? 0 : pos.y - 1) };
+
+		for (int i = 0; i < 4; ++i) {
 			Points move = new Points(pos, dests[i]);
 			tmpBoard = this.board;
-			
-			if ( general.isValidMove(move, this.board)){
+
+			if (general.isValidMove(move, this.board)) {
 				this.board = general.applyMove(move, board);
-				if(!this.isReachable(dests[i], col) ) {
+				if (!this.isReachable(dests[i], col)) {
 					this.board = tmpBoard;
 					return false;
 				}
@@ -361,47 +371,53 @@ public class XiangqiGame extends Game implements Serializable {
 		this.board = tmpBoard;
 		return true;
 	}
-	
-	public void dummy()
-	{
+
+	public void dummy() {
 		Figures dummyfigure = new Figures("null", 'n');
-		boolean dummy = dummyfigure.isValidMove(new Points(new Pair(0,0),new Pair(0,0)), this.board);
+		boolean dummy = dummyfigure.isValidMove(new Points(new Pair(0, 0), new Pair(0, 0)), this.board);
 		String dummyPlayerName = dummyfigure.getPlayer();
 		char dummyIdentifier = dummyfigure.getIdentifier();
 	}
-	
-	public boolean correctFigure(Pair field, String color)
-	{
+
+	public boolean correctFigure(Pair field, String color) {
 		String[] boardRows = this.getBoardRows();
 		boolean is_red = Character.isUpperCase(boardRows[9 - field.y].charAt(field.x)) && color.equals("red");
 		boolean is_black = Character.isLowerCase(boardRows[9 - field.y].charAt(field.x)) && color.equals("black");
 		return is_red ^ is_black;
 	}
-	
+
 	@Override
 	public boolean tryMove(String moveString, Player player) {
 		dummy();
 		String color = player.equals(this.redPlayer) ? "red" : "black";
-	
-		if(isInCheckmate(player)) return this.regularGameEnd(nextPlayer);
-	
-		
-		Player opponent = player.equals(this.redPlayer) ?  this.blackPlayer : this.redPlayer;
-		if (!validateMoveString(moveString)) return false;
-	
+
+		if (isInCheckmate(player))
+			return this.regularGameEnd(nextPlayer);
+
+		Player opponent = player.equals(this.redPlayer) ? this.blackPlayer : this.redPlayer;
+		if (!validateMoveString(moveString))
+			return false;
+
 		String[] fields = moveString.split("-");
 		Pair field = getFieldValue(fields[0]);
-		if(!correctFigure(field,color)) return false;
-	
-		Figures figure = getFigureFromPos(field, color);	
+		if (!correctFigure(field, color))
+			return false;
+
+		Figures figure = getFigureFromPos(field, color);
 		Points p = new Points(getFieldValue(fields[0]), getFieldValue(fields[1]));
 		if (figure.isValidMove(p, this.board)) {
 			this.history.add(new Move(moveString, this.board, player));
 			this.board = figure.applyMove(p, this.board);
 			boolean checkmate = isInCheckmate(opponent);
-	
-			if(checkmate) {return this.regularGameEnd(player);}
-			if (player == this.redPlayer) {	nextPlayer = this.blackPlayer; 	} else {nextPlayer = this.redPlayer;}	
+
+			if (checkmate) {
+				return this.regularGameEnd(player);
+			}
+			if (player == this.redPlayer) {
+				nextPlayer = this.blackPlayer;
+			} else {
+				nextPlayer = this.redPlayer;
+			}
 			return true;
 		}
 		return false;

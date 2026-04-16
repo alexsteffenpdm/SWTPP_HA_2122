@@ -8,13 +8,13 @@ public class Figures {
 
 	public Figures(String p, char i) {
 		this.player = p;
-		
+
 		if (this.player.equals("red")) {
 			i = Character.toUpperCase(i);
-		} else if ( this.player.equals("black") ) {
+		} else if (this.player.equals("black")) {
 			i = Character.toLowerCase(i);
 		}
-		
+
 		this.identifier = i;
 	}
 
@@ -108,7 +108,7 @@ public class Figures {
 	public boolean ownFigure(char fig) {
 		boolean both_red = Character.isLowerCase(this.identifier) && Character.isLowerCase(fig);
 		boolean both_black = Character.isUpperCase(this.identifier) && Character.isUpperCase(fig);
-		
+
 		return !Character.isDigit(fig) && (both_red ^ both_black); // ^ == exclusive-or
 	}
 

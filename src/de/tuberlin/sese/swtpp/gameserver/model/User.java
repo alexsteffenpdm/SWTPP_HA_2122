@@ -3,7 +3,6 @@ package de.tuberlin.sese.swtpp.gameserver.model;
 import java.io.Serializable;
 import java.util.LinkedList;
 
-
 /**
  * This class represents all properties associated with a user in the system.
  * Games are linked via player objects, which hold information of a user

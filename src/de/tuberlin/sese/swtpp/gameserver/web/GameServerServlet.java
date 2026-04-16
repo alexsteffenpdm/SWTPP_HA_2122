@@ -6,7 +6,11 @@ import de.tuberlin.sese.swtpp.gameserver.model.Game;
 import de.tuberlin.sese.swtpp.gameserver.model.Player;
 import de.tuberlin.sese.swtpp.gameserver.model.Statistics;
 import de.tuberlin.sese.swtpp.gameserver.model.User;
-
+import java.io.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonBuilderFactory;
@@ -19,11 +23,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Servlet implementation class GameServerServlet
@@ -36,9 +35,9 @@ public class GameServerServlet extends HttpServlet {
 	// this is just hardcoded to "somewhere"
 	private static final String DB_PATH = "test.db";
 
-/////////////////////////////////////////////////////////////////////
-//        GLOBAL DATA                                              //
-/////////////////////////////////////////////////////////////////////														   
+	/////////////////////////////////////////////////////////////////////
+	// GLOBAL DATA //
+	/////////////////////////////////////////////////////////////////////
 
 	// controller classes
 	public static UserController userController;
@@ -66,6 +65,7 @@ public class GameServerServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		response.setContentType("text/html");
 
+		System.out.print(request.toString());
 		String usecase = request.getParameter("usecase");
 
 		if (usecase == null || usecase.equals("") || usecase.equals("checkuser")) {
@@ -94,9 +94,9 @@ public class GameServerServlet extends HttpServlet {
 
 	private void executeGameUseCase(HttpServletRequest request, PrintWriter out, String usecase, User u) {
 		// game-related and data-related use cases.
-		// servlet's job here is only to extract the correct parameters and to pass them
-		// on to the use case methods (see below)
-		// the result is passed back to javascript as a string (if complex: JSON)
+		// servlet's job here is only to extract the correct parameters and to pass
+		// them on to the use case methods (see below) the result is passed back to
+		// javascript as a string (if complex: JSON)
 		try {
 			switch (usecase) {
 			case "startgame":
@@ -193,9 +193,9 @@ public class GameServerServlet extends HttpServlet {
 		doGet(request, response);
 	}
 
-/////////////////////////////////////////////////////////////
-///      WEB INTERFACE: USE CASE FUNCTIONS                 //
-/////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////
+	/// WEB INTERFACE: USE CASE FUNCTIONS //
+	/////////////////////////////////////////////////////////////
 
 	public String startGame(User u, String bots, String type) throws Exception {
 		int ID = gameController.startGame(u, bots, type);
@@ -217,7 +217,6 @@ public class GameServerServlet extends HttpServlet {
 		gameController.tryMove(u, gameID, move);
 
 		return createGameJSON(u, gameID);
-
 	}
 
 	public String giveUp(User u, int gameID) {
@@ -225,7 +224,6 @@ public class GameServerServlet extends HttpServlet {
 		gameController.giveUp(u, gameID);
 
 		return createGameJSON(u, gameID);
-
 	}
 
 	public String callDraw(User u, int gameID) {
@@ -233,7 +231,6 @@ public class GameServerServlet extends HttpServlet {
 		gameController.callDraw(u, gameID);
 
 		return createGameJSON(u, gameID);
-
 	}
 
 	public String getGameData(User u, int gameID) {
@@ -265,7 +262,6 @@ public class GameServerServlet extends HttpServlet {
 		} else {
 			return factory.createObjectBuilder().build().toString();
 		}
-
 	}
 
 	public String createGameJSON(User u, int gameID) {
